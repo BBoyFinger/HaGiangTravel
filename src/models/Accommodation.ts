@@ -14,7 +14,8 @@ const accommodationSchema = new mongoose.Schema({
   email: { type: String, required: true },
   website_url: { type: String, required: true },
   created_at: { type: Date, default: Date.now },
-  updated_at: { type: Date, default: Date.now }
+  updated_at: { type: Date, default: Date.now },
+  type: { type: String, enum: ['hotel', 'homestay'], required: true }
 });
 
 export default mongoose.model("Accommodation", accommodationSchema); 

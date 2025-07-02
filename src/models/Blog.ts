@@ -7,12 +7,17 @@ const blogSchema = new mongoose.Schema({
   tags: [{ type: String }],
   author: { type: String, required: true },
   thumbnail: { type: String, required: true },
-  createdDate: { type: Date, default: Date.now },
-  updatedDate: { type: Date, default: Date.now },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
   likes: { type: Number, default: 0 },
   bookmarks: { type: Number, default: 0 },
   comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
   status: { type: String, enum: ['published', 'draft', 'archived'], default: 'draft' }
+});
+
+blogSchema.pre('save', function (next) {
+  this.updatedAt = new Date();
+  next();
 });
 
 export default mongoose.model("Blog", blogSchema); 
