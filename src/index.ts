@@ -38,12 +38,12 @@ mongoose.connect(MONGODB_URI)
 
 app.use("/api/auth", authRouter);
 app.use("/api/tours", tourRouter);
-app.use("/api/blog", blogRouter);
+app.use("/api/blogs", blogRouter);
 app.use("/api/accommodation", accommodationRouter);
 app.use("/api/vehicle", vehicleRouter);
 app.use("/api/review", reviewRouter);
 app.use("/api/booking", bookingRouter);
-app.use("/api/destination", destinationRouter);
+app.use("/api/destinations", destinationRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`)

@@ -1,22 +1,34 @@
 import mongoose from "mongoose";
 
 const destinationSchema = new mongoose.Schema({
-  name: { type: String, required: true },
+  name: {
+    vi: { type: String, required: true },
+    en: { type: String, required: true }
+  },
   slug: { type: String, required: true, unique: true },
   type: { type: String, required: true },
-  image: { type: String, required: true },
-  images: [{ type: String, required: true }],
-  shortDescription: { type: String, required: true },
-  description: { type: String, required: true },
-  location: {
-    lat: { type: Number, required: true },
-    lng: { type: Number, required: true },
-    address: { type: String }
+  images: [{ type: String }],
+  shortDescription: {
+    vi: { type: String },
+    en: { type: String }
   },
-  priceFrom: { type: Number, required: true },
-  currency: { type: String, required: true },
+  description: {
+    vi: { type: String },
+    en: { type: String }
+  },
+  location: {
+    lat: { type: Number },
+    lng: { type: Number },
+    address: {
+      vi: { type: String },
+      en: { type: String }
+    }
+  },
   detail: {
-    fullDescription: { type: String, required: true }
+    fullDescription: {
+      vi: { type: String },
+      en: { type: String }
+    }
   },
   relatedTours: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tour' }],
   createdAt: { type: Date, default: Date.now },

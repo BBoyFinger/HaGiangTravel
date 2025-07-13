@@ -46,7 +46,11 @@ export async function getDestinationBySlug(req: Request, res: Response) {
 export async function createDestination(req: Request, res: Response) {
     try {
         const { name, ...rest } = req.body;
-        const slug = slugify(name, { lower: true, locale: 'vi' });
+        if (!name || !name.vi) {
+            res.status(400).json({ message: 'Trường name.vi là bắt buộc.' });
+            return
+        }
+        const slug = slugify(name.vi, { lower: true, locale: 'vi' });
         const destination = await Destination.create({ name, slug, ...rest });
         res.status(201).json({ destination });
     } catch (err) {
@@ -59,8 +63,8 @@ export async function updateDestination(req: Request, res: Response) {
     try {
         const { id } = req.params;
         let updateData = { ...req.body };
-        if (updateData.name) {
-            updateData.slug = slugify(updateData.name, { lower: true, locale: 'vi' });
+        if (updateData.name && updateData.name.vi) {
+            updateData.slug = slugify(updateData.name.vi, { lower: true, locale: 'vi' });
         }
         const destination = await Destination.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
         if (!destination) {

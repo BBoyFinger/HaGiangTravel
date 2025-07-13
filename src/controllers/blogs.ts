@@ -43,33 +43,62 @@ export async function getBlogBySlug(req: Request, res: Response) {
 }
 
 // Tạo mới blog
-export async function createBlog(req: Request, res: Response) {
+export async function createBlog(req: Request, res: Response): Promise<void> {
     try {
-        const { title, ...rest } = req.body;
-        const slug = slugify(title, { lower: true, locale: 'vi' });
-        const blog = await Blog.create({ title, slug, ...rest });
+        const { title, thumbnail, ...rest } = req.body;
+        let slug = '';
+        if (title) {
+            if (typeof title === 'object' && title.vi) {
+                slug = slugify(title.vi, { lower: true, locale: 'vi' });
+            } else if (typeof title === 'string') {
+                slug = slugify(title, { lower: true, locale: 'vi' });
+            }
+        }
+        const imageUrls = req.files ? (Array.isArray(req.files) ? req.files.map((file: any) => file.path) : []) : [];
+        const blogThumbnail = thumbnail || (imageUrls.length > 0 ? imageUrls[0] : undefined);
+        if (!blogThumbnail) {
+            res.status(400).json({ message: 'Thiếu ảnh đại diện (thumbnail) cho blog.' });
+            return;
+        }
+        const blog = await Blog.create({ title, slug, thumbnail: blogThumbnail, imageUrls, ...rest });
         res.status(201).json({ blog });
+        return;
     } catch (err) {
         res.status(500).json({ message: 'Lỗi server khi tạo blog.', error: err });
+        return;
     }
 }
 
 // Cập nhật blog
-export async function updateBlog(req: Request, res: Response) {
+export async function updateBlog(req: Request, res: Response): Promise<void> {
     try {
         const { id } = req.params;
         let updateData = { ...req.body };
         if (updateData.title) {
-            updateData.slug = slugify(updateData.title, { lower: true, locale: 'vi' });
+            if (typeof updateData.title === 'object' && updateData.title.vi) {
+                updateData.slug = slugify(updateData.title.vi, { lower: true, locale: 'vi' });
+            } else if (typeof updateData.title === 'string') {
+                updateData.slug = slugify(updateData.title, { lower: true, locale: 'vi' });
+            }
+        }
+        // Xử lý cập nhật nhiều ảnh
+        if (req.files && Array.isArray(req.files) && req.files.length > 0) {
+            updateData.imageUrls = req.files.map((file: any) => file.path);
+            // Nếu không có thumbnail mới, lấy ảnh đầu tiên trong imageUrls mới
+            if (!updateData.thumbnail && updateData.imageUrls.length > 0) {
+                updateData.thumbnail = updateData.imageUrls[0];
+            }
         }
         const blog = await Blog.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
         if (!blog) {
             res.status(404).json({ message: 'Không tìm thấy blog.' });
-            return
+            return;
         }
         res.json({ blog });
-    } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi cập nhật blog.' });
+        return;
+    } catch (err: any) {
+        res.status(500).json({ message: err.message });
+        return;
     }
 }
 
