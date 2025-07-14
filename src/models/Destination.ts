@@ -17,20 +17,12 @@ const destinationSchema = new mongoose.Schema({
     en: { type: String }
   },
   location: {
-    lat: { type: Number },
-    lng: { type: Number },
     address: {
       vi: { type: String },
       en: { type: String }
     }
   },
-  detail: {
-    fullDescription: {
-      vi: { type: String },
-      en: { type: String }
-    }
-  },
-  relatedTours: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tour' }],
+ 
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });

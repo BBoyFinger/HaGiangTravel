@@ -63,9 +63,39 @@ export async function updateDestination(req: Request, res: Response) {
     try {
         const { id } = req.params;
         let updateData = { ...req.body };
+        // Parse các trường object nếu là string (khi gửi multipart/form-data)
+        if (typeof updateData.name === 'string') {
+            updateData.name = JSON.parse(updateData.name);
+        }
+        if (typeof updateData.shortDescription === 'string') {
+            updateData.shortDescription = JSON.parse(updateData.shortDescription);
+        }
+        if (typeof updateData.description === 'string') {
+            updateData.description = JSON.parse(updateData.description);
+        }
+        if (typeof updateData.location === 'string') {
+            updateData.location = JSON.parse(updateData.location);
+        }
         if (updateData.name && updateData.name.vi) {
             updateData.slug = slugify(updateData.name.vi, { lower: true, locale: 'vi' });
         }
+        // Lấy danh sách ảnh cũ muốn giữ lại
+        let imagesToKeep: string[] = [];
+        if (updateData.imagesToKeep) {
+            if (typeof updateData.imagesToKeep === 'string') {
+                imagesToKeep = JSON.parse(updateData.imagesToKeep);
+            } else if (Array.isArray(updateData.imagesToKeep)) {
+                imagesToKeep = updateData.imagesToKeep;
+            }
+        }
+        // Ảnh mới upload
+        let newImages: string[] = [];
+        if (req.files && Array.isArray(req.files) && req.files.length > 0) {
+            newImages = req.files.map((file: any) => file.path);
+        }
+        // Gộp ảnh giữ lại + ảnh mới
+        updateData.images = [...imagesToKeep, ...newImages];
+
         const destination = await Destination.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
         if (!destination) {
             res.status(404).json({ message: 'Không tìm thấy điểm đến.' });
