@@ -11,6 +11,8 @@ import vehicleRouter from "./routes/vehicles";
 import reviewRouter from "./routes/reviews";
 import bookingRouter from "./routes/bookings";
 import destinationRouter from "./routes/destinations";
+import commentRouter from "./routes/comments";
+import userRouter from "./routes/users";
 
 
 dotenv.config();
@@ -44,6 +46,8 @@ app.use("/api/vehicle", vehicleRouter);
 app.use("/api/review", reviewRouter);
 app.use("/api/booking", bookingRouter);
 app.use("/api/destinations", destinationRouter);
+app.use("/api/comments", commentRouter);
+app.use("/api/users", userRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`)

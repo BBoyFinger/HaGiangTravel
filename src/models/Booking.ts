@@ -8,6 +8,7 @@ const bookingSchema = new mongoose.Schema({
   status: { type: String, enum: ['pending', 'confirmed', 'cancelled'], default: 'pending' },
   bookingDate: { type: Date, default: Date.now },
   travelDate: { type: Date, required: true },
+  guideId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   contactInfo: {
     fullName: { type: String, required: true },
     phone: { type: String, required: true },

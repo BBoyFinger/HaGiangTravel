@@ -4,7 +4,10 @@ import { Request, Response } from 'express';
 // Lấy tất cả booking
 export async function getAllBookings(req: Request, res: Response) {
     try {
-        const bookings = await Booking.find();
+        const bookings = await Booking.find()
+            .populate('userId', 'name email')
+            .populate('tourId', 'name')
+            .populate('guideId', 'name email');
         res.json({ bookings });
     } catch (err) {
         res.status(500).json({ message: 'Lỗi server khi lấy danh sách booking.' });
@@ -15,7 +18,10 @@ export async function getAllBookings(req: Request, res: Response) {
 export async function getBookingById(req: Request, res: Response) {
     try {
         const { id } = req.params;
-        const booking = await Booking.findById(id);
+        const booking = await Booking.findById(id)
+            .populate('userId', 'name email')
+            .populate('tourId', 'name')
+            .populate('guideId', 'name email');
         if (!booking) {
             res.status(404).json({ message: 'Không tìm thấy booking.' });
             return;
