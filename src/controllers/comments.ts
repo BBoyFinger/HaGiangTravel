@@ -19,8 +19,12 @@ export async function getAllComments(req: Request, res: Response) {
 // Tạo mới comment (user gửi)
 export async function createComment(req: Request, res: Response) {
     try {
-        const { user, content, refId, refType } = req.body;
-        const comment = await Comment.create({ user, content, refId, refType });
+        const { user, name, email, content, refId, refType } = req.body;
+        const commentData: any = { content, refId, refType };
+        if (user) commentData.user = user;
+        if (name) commentData.name = name;
+        if (email) commentData.email = email;
+        const comment = await Comment.create(commentData);
         res.status(201).json({ comment });
     } catch (err) {
         res.status(500).json({ message: 'Lỗi server khi tạo comment.', error: err });

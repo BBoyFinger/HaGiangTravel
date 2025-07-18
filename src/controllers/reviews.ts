@@ -4,7 +4,10 @@ import { Request, Response } from 'express';
 // Lấy tất cả review
 export async function getAllReviews(req: Request, res: Response) {
     try {
-        const reviews = await Review.find();
+        const { tourId } = req.query;
+        const filter: any = {};
+        if (tourId) filter.tourId = tourId;
+        const reviews = await Review.find(filter).populate('userId', 'name email');
         res.json({ reviews });
     } catch (err) {
         res.status(500).json({ message: 'Lỗi server khi lấy danh sách review.' });
@@ -29,7 +32,12 @@ export async function getReviewById(req: Request, res: Response) {
 // Tạo mới review
 export async function createReview(req: Request, res: Response) {
     try {
-        const review = await Review.create(req.body);
+        const { userId, name, email, tourId, rating, comment } = req.body;
+        const reviewData: any = { tourId, rating, comment };
+        if (userId) reviewData.userId = userId;
+        if (name) reviewData.name = name;
+        if (email) reviewData.email = email;
+        const review = await Review.create(reviewData);
         res.status(201).json({ review });
     } catch (err) {
         res.status(500).json({ message: 'Lỗi server khi tạo review.', error: err });

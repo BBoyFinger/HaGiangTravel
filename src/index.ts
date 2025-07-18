@@ -43,7 +43,7 @@ app.use("/api/tours", tourRouter);
 app.use("/api/blogs", blogRouter);
 app.use("/api/accommodation", accommodationRouter);
 app.use("/api/vehicle", vehicleRouter);
-app.use("/api/review", reviewRouter);
+app.use("/api/reviews", reviewRouter);
 app.use("/api/booking", bookingRouter);
 app.use("/api/destinations", destinationRouter);
 app.use("/api/comments", commentRouter);
