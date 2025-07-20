@@ -1,6 +1,7 @@
 import User from '../models/User';
 import bcrypt from 'bcryptjs';
 import { Request, Response } from 'express';
+import Tour from '../models/Tour';
 
 // Lấy tất cả user
 export async function getAllUsers(req: Request, res: Response) {
@@ -95,4 +96,85 @@ export async function toggleActive(req: Request, res: Response) {
   } catch (err) {
     res.status(500).json({ message: 'Lỗi server khi cập nhật trạng thái user.' });
   }
-} 
+}
+
+// API lấy wishlist tour của user
+export async function getWishlist(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id).populate('wishlist');
+    if (!user) {
+      res.status(404).json({ message: 'Không tìm thấy user.' });
+      return
+    }
+    res.json({ wishlist: user.wishlist });
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi server khi lấy wishlist.' });
+  }
+}
+
+// API thêm tour vào wishlist
+export async function addToWishlist(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+    const { tourId } = req.body;
+    const user = await User.findById(id);
+    if (!user) {
+      res.status(404).json({ message: 'Không tìm thấy user.' });
+      return
+    }
+    if (!user.wishlist.some(tid => tid.toString() === tourId)) {
+      user.wishlist.push(tourId);
+      await user.save();
+    }
+    const populated = await user.populate('wishlist');
+    res.json({ wishlist: populated.wishlist });
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi server khi thêm vào wishlist.' });
+  }
+}
+
+// API xoá tour khỏi wishlist
+export async function removeFromWishlist(req: Request, res: Response) {
+  try {
+    const { id, tourId } = req.params;
+    const user = await User.findById(id);
+    if (!user) {
+      res.status(404).json({ message: 'Không tìm thấy user.' });
+      return
+    }
+    user.wishlist = user.wishlist.filter(tid => tid.toString() !== tourId);
+    await user.save();
+    const populated = await user.populate('wishlist');
+    res.json({ wishlist: populated.wishlist });
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi server khi xoá khỏi wishlist.' });
+  }
+}
+
+// Lấy admin đầu tiên
+export async function getAdmin(req: Request, res: Response) {
+  try {
+    const admin = await User.findOne({ role: 'admin' }).select('-passwordHash');
+    if (!admin) {
+      res.status(404).json({ message: 'No admin found' });
+      return
+    }
+    res.json({ admin });
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi server khi lấy admin.' });
+  }
+}
+
+export default {
+  getAllUsers,
+  createUser,
+  updateUser,
+  deleteUser,
+  changeRole,
+  toggleActive,
+  getWishlist,
+  addToWishlist,
+  removeFromWishlist,
+  getAdmin
+}; 

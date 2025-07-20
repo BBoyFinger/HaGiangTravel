@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
   avatarUrl: { type: String },
   phone: { type: String },
   role: { type: String, enum: ['admin', 'user', 'editor', 'guide'], default: 'user' },
-  favorites: [{ type: String }],
+  wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tour' }],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
   isActive: { type: Boolean, default: true },
