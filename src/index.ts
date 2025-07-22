@@ -72,8 +72,8 @@ io.on("connection", (socket) => {
   // Lấy userId từ client khi connect
   console.log("connetion")
   io.on("connection", (socket) => {
-    socket.on("send_message", async ({ from, to, content }) => {
-      console.log("Received send_message", { from, to, content });
+    socket.on("send_message", async ({ from, to, content }: { from: string, to: string, content: string }) => {
+      console.log("Received send_message", { from, to, content })
       // ...rest of code
     });
   });
