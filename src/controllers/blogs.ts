@@ -8,7 +8,7 @@ export async function getAllBlogs(req: Request, res: Response) {
         const blogs = await Blog.find();
         res.json({ blogs });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi lấy danh sách blog.' });
+        res.status(500).json({ message: 'Lỗi server khi lấy danh sách blog.', error: err });
     }
 }
 
@@ -23,7 +23,7 @@ export async function getBlogById(req: Request, res: Response) {
         }
         res.json({ blog });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi lấy blog.' });
+        res.status(500).json({ message: 'Lỗi server khi lấy blog.', error: err });
     }
 }
 
@@ -38,7 +38,7 @@ export async function getBlogBySlug(req: Request, res: Response) {
         }
         res.json({ blog });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi lấy blog.' });
+        res.status(500).json({ message: 'Lỗi server khi lấy blog.', error: err });
     }
 }
 
@@ -54,7 +54,7 @@ export async function createBlog(req: Request, res: Response): Promise<void> {
                 slug = slugify(title, { lower: true, locale: 'vi' });
             }
         }
-        const imageUrls = req.files ? (Array.isArray(req.files) ? req.files.map((file: any) => file.path) : []) : [];
+        const imageUrls = req.files ? (Array.isArray(req.files) ? req.files.map((file: Express.Multer.File) => file.path) : []) : [];
         const blogThumbnail = thumbnail || (imageUrls.length > 0 ? imageUrls[0] : undefined);
         if (!blogThumbnail) {
             res.status(400).json({ message: 'Thiếu ảnh đại diện (thumbnail) cho blog.' });
@@ -73,7 +73,7 @@ export async function createBlog(req: Request, res: Response): Promise<void> {
 export async function updateBlog(req: Request, res: Response): Promise<void> {
     try {
         const { id } = req.params;
-        let updateData = { ...req.body };
+        const updateData = { ...req.body };
         if (updateData.title) {
             if (typeof updateData.title === 'object' && updateData.title.vi) {
                 updateData.slug = slugify(updateData.title.vi, { lower: true, locale: 'vi' });
@@ -83,7 +83,7 @@ export async function updateBlog(req: Request, res: Response): Promise<void> {
         }
         // Xử lý cập nhật nhiều ảnh
         if (req.files && Array.isArray(req.files) && req.files.length > 0) {
-            updateData.imageUrls = req.files.map((file: any) => file.path);
+            updateData.imageUrls = req.files.map((file: Express.Multer.File) => file.path);
             // Nếu không có thumbnail mới, lấy ảnh đầu tiên trong imageUrls mới
             if (!updateData.thumbnail && updateData.imageUrls.length > 0) {
                 updateData.thumbnail = updateData.imageUrls[0];
@@ -96,8 +96,8 @@ export async function updateBlog(req: Request, res: Response): Promise<void> {
         }
         res.json({ blog });
         return;
-    } catch (err: any) {
-        res.status(500).json({ message: err.message });
+    } catch (err) {
+        res.status(500).json({ message: err });
         return;
     }
 }
@@ -113,6 +113,6 @@ export async function deleteBlog(req: Request, res: Response) {
         }
         res.json({ message: 'Xóa blog thành công.' });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi xóa blog.' });
+        res.status(500).json({ message: 'Lỗi server khi xóa blog.', error: err });
     }
 } 

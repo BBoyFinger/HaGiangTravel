@@ -13,7 +13,7 @@ const resetHeroCarousel = async () => {
       await mongoose.connection.db.collection('herocarousels').drop();
       console.log('✅ Dropped herocarousels collection');
     } catch (error) {
-      console.log('ℹ️ Collection does not exist or already dropped');
+      console.log('ℹ️ Collection does not exist or already dropped', error);
     }
 
     // Create new collection with correct schema

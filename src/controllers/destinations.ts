@@ -8,7 +8,7 @@ export async function getAllDestinations(req: Request, res: Response) {
         const destinations = await Destination.find();
         res.json({ destinations });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi lấy danh sách điểm đến.' });
+        res.status(500).json({ message: 'Lỗi server khi lấy danh sách điểm đến.', error: err });
     }
 }
 
@@ -23,7 +23,7 @@ export async function getDestinationById(req: Request, res: Response) {
         }
         res.json({ destination });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi lấy điểm đến.' });
+        res.status(500).json({ message: 'Lỗi server khi lấy điểm đến.', error: err });
     }
 }
 
@@ -38,7 +38,7 @@ export async function getDestinationBySlug(req: Request, res: Response) {
         }
         res.json({ destination });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi lấy điểm đến.' });
+        res.status(500).json({ message: 'Lỗi server khi lấy điểm đến.', error: err });
     }
 }
 
@@ -62,7 +62,7 @@ export async function createDestination(req: Request, res: Response) {
 export async function updateDestination(req: Request, res: Response) {
     try {
         const { id } = req.params;
-        let updateData = { ...req.body };
+        const updateData = { ...req.body };
         // Parse các trường object nếu là string (khi gửi multipart/form-data)
         if (typeof updateData.name === 'string') {
             updateData.name = JSON.parse(updateData.name);
@@ -91,7 +91,7 @@ export async function updateDestination(req: Request, res: Response) {
         // Ảnh mới upload
         let newImages: string[] = [];
         if (req.files && Array.isArray(req.files) && req.files.length > 0) {
-            newImages = req.files.map((file: any) => file.path);
+            newImages = req.files.map((file: Express.Multer.File) => file.path);
         }
         // Gộp ảnh giữ lại + ảnh mới
         updateData.images = [...imagesToKeep, ...newImages];
@@ -103,7 +103,7 @@ export async function updateDestination(req: Request, res: Response) {
         }
         res.json({ destination });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi cập nhật điểm đến.' });
+        res.status(500).json({ message: 'Lỗi server khi cập nhật điểm đến.', error: err });
     }
 }
 
@@ -118,6 +118,6 @@ export async function deleteDestination(req: Request, res: Response) {
         }
         res.json({ message: 'Xóa điểm đến thành công.' });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi xóa điểm đến.' });
+        res.status(500).json({ message: 'Lỗi server khi xóa điểm đến.', error: err });
     }
 } 

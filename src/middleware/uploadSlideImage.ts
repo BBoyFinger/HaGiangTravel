@@ -11,7 +11,7 @@ const storage = new CloudinaryStorage({
       { width: 1200, height: 600, crop: 'fill' },
       { quality: 'auto' }
     ]
-  } as any
+  } as Record<string, unknown>
 });
 
 const uploadSlideImage = multer({

@@ -5,14 +5,14 @@ import { Request, Response } from 'express';
 export async function getAllComments(req: Request, res: Response) {
     try {
         const { status, refType, refId } = req.query;
-        const filter: any = {};
+        const filter: Record<string, unknown> = {};
         if (status) filter.status = status;
         if (refType) filter.refType = refType;
         if (refId) filter.refId = refId;
         const comments = await Comment.find(filter).populate('user');
         res.json({ comments });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi lấy danh sách comment.' });
+        res.status(500).json({ message: 'Lỗi server khi lấy danh sách comment.', error: err });
     }
 }
 
@@ -20,7 +20,7 @@ export async function getAllComments(req: Request, res: Response) {
 export async function createComment(req: Request, res: Response) {
     try {
         const { user, name, email, content, refId, refType } = req.body;
-        const commentData: any = { content, refId, refType };
+        const commentData: Record<string, unknown> = { content, refId, refType };
         if (user) commentData.user = user;
         if (name) commentData.name = name;
         if (email) commentData.email = email;
@@ -42,7 +42,7 @@ export async function approveComment(req: Request, res: Response) {
         }
         res.json({ comment });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi duyệt comment.' });
+        res.status(500).json({ message: 'Lỗi server khi duyệt comment.', error: err });
     }
 }
 
@@ -57,7 +57,7 @@ export async function rejectComment(req: Request, res: Response) {
         }
         res.json({ comment });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi từ chối comment.' });
+        res.status(500).json({ message: 'Lỗi server khi từ chối comment.', error: err });
     }
 }
 
@@ -72,7 +72,7 @@ export async function deleteComment(req: Request, res: Response) {
         }
         res.json({ message: 'Xóa comment thành công.' });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi xóa comment.' });
+        res.status(500).json({ message: 'Lỗi server khi xóa comment.', error: err });
     }
 }
 
@@ -88,6 +88,6 @@ export async function updateComment(req: Request, res: Response) {
         }
         res.json({ comment });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi cập nhật comment.' });
+        res.status(500).json({ message: 'Lỗi server khi cập nhật comment.', error: err });
     }
 } 

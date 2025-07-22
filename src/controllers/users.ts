@@ -1,7 +1,6 @@
 import User from '../models/User';
 import bcrypt from 'bcryptjs';
 import { Request, Response } from 'express';
-import Tour from '../models/Tour';
 
 // Lấy tất cả user
 export async function getAllUsers(req: Request, res: Response) {
@@ -9,7 +8,7 @@ export async function getAllUsers(req: Request, res: Response) {
     const users = await User.find().select('-passwordHash');
     res.json({ users });
   } catch (err) {
-    res.status(500).json({ message: 'Lỗi server khi lấy danh sách user.' });
+    res.status(500).json({ message: 'Lỗi server khi lấy danh sách user.', error: err });
   }
 }
 
@@ -46,7 +45,7 @@ export async function updateUser(req: Request, res: Response) {
     }
     res.json({ user });
   } catch (err) {
-    res.status(500).json({ message: 'Lỗi server khi cập nhật user.' });
+    res.status(500).json({ message: 'Lỗi server khi cập nhật user.', error: err });
   }
 }
 
@@ -61,7 +60,7 @@ export async function deleteUser(req: Request, res: Response) {
     }
     res.json({ message: 'Xóa user thành công.' });
   } catch (err) {
-    res.status(500).json({ message: 'Lỗi server khi xóa user.' });
+    res.status(500).json({ message: 'Lỗi server khi xóa user.', error: err });
   }
 }
 
@@ -77,7 +76,7 @@ export async function changeRole(req: Request, res: Response) {
     }
     res.json({ user });
   } catch (err) {
-    res.status(500).json({ message: 'Lỗi server khi đổi vai trò user.' });
+    res.status(500).json({ message: 'Lỗi server khi đổi vai trò user.', error: err });
   }
 }
 
@@ -94,7 +93,7 @@ export async function toggleActive(req: Request, res: Response) {
     await user.save();
     res.json({ user });
   } catch (err) {
-    res.status(500).json({ message: 'Lỗi server khi cập nhật trạng thái user.' });
+    res.status(500).json({ message: 'Lỗi server khi cập nhật trạng thái user.', error: err });
   }
 }
 
@@ -109,7 +108,7 @@ export async function getWishlist(req: Request, res: Response) {
     }
     res.json({ wishlist: user.wishlist });
   } catch (err) {
-    res.status(500).json({ message: 'Lỗi server khi lấy wishlist.' });
+    res.status(500).json({ message: 'Lỗi server khi lấy wishlist.', error: err });
   }
 }
 
@@ -130,7 +129,7 @@ export async function addToWishlist(req: Request, res: Response) {
     const populated = await user.populate('wishlist');
     res.json({ wishlist: populated.wishlist });
   } catch (err) {
-    res.status(500).json({ message: 'Lỗi server khi thêm vào wishlist.' });
+    res.status(500).json({ message: 'Lỗi server khi thêm vào wishlist.', error: err });
   }
 }
 
@@ -148,7 +147,7 @@ export async function removeFromWishlist(req: Request, res: Response) {
     const populated = await user.populate('wishlist');
     res.json({ wishlist: populated.wishlist });
   } catch (err) {
-    res.status(500).json({ message: 'Lỗi server khi xoá khỏi wishlist.' });
+    res.status(500).json({ message: 'Lỗi server khi xoá khỏi wishlist.', error: err });
   }
 }
 
@@ -162,7 +161,7 @@ export async function getAdmin(req: Request, res: Response) {
     }
     res.json({ admin });
   } catch (err) {
-    res.status(500).json({ message: 'Lỗi server khi lấy admin.' });
+    res.status(500).json({ message: 'Lỗi server khi lấy admin.', error: err });
   }
 }
 

@@ -5,12 +5,12 @@ import { Request, Response } from 'express';
 export async function getAllReviews(req: Request, res: Response) {
     try {
         const { tourId } = req.query;
-        const filter: any = {};
+        const filter: Record<string, unknown> = {};
         if (tourId) filter.tourId = tourId;
         const reviews = await Review.find(filter).populate('userId', 'name email');
         res.json({ reviews });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi lấy danh sách review.' });
+        res.status(500).json({ message: 'Lỗi server khi lấy danh sách review.', error: err });
     }
 }
 
@@ -25,7 +25,7 @@ export async function getReviewById(req: Request, res: Response) {
         }
         res.json({ review });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi lấy review.' });
+        res.status(500).json({ message: 'Lỗi server khi lấy review.', error: err });
     }
 }
 
@@ -33,7 +33,7 @@ export async function getReviewById(req: Request, res: Response) {
 export async function createReview(req: Request, res: Response) {
     try {
         const { userId, name, email, tourId, rating, comment } = req.body;
-        const reviewData: any = { tourId, rating, comment };
+        const reviewData: Record<string, unknown> = { tourId, rating, comment };
         if (userId) reviewData.userId = userId;
         if (name) reviewData.name = name;
         if (email) reviewData.email = email;
@@ -55,7 +55,7 @@ export async function updateReview(req: Request, res: Response) {
         }
         res.json({ review });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi cập nhật review.' });
+        res.status(500).json({ message: 'Lỗi server khi cập nhật review.', error: err });
     }
 }
 
@@ -70,6 +70,6 @@ export async function deleteReview(req: Request, res: Response) {
         }
         res.json({ message: 'Xóa review thành công.' });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi xóa review.' });
+        res.status(500).json({ message: 'Lỗi server khi xóa review.', error: err });
     }
 } 

@@ -10,7 +10,7 @@ export async function getAllBookings(req: Request, res: Response) {
             .populate('guideId', 'name email');
         res.json({ bookings });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi lấy danh sách booking.' });
+        res.status(500).json({ message: 'Lỗi server khi lấy danh sách booking.', error: err });
     }
 }
 
@@ -28,7 +28,7 @@ export async function getBookingById(req: Request, res: Response) {
         }
         res.json({ booking });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi lấy booking.' });
+        res.status(500).json({ message: 'Lỗi server khi lấy booking.', error: err });
     }
 }
 
@@ -53,7 +53,7 @@ export async function updateBooking(req: Request, res: Response) {
         }
         res.json({ booking });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi cập nhật booking.' });
+        res.status(500).json({ message: 'Lỗi server khi cập nhật booking.', error: err });
     }
 }
 
@@ -68,6 +68,6 @@ export async function deleteBooking(req: Request, res: Response) {
         }
         res.json({ message: 'Xóa booking thành công.' });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi xóa booking.' });
+        res.status(500).json({ message: 'Lỗi server khi xóa booking.', error: err });
     }
 }

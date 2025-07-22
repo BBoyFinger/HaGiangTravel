@@ -8,7 +8,7 @@ export async function getAllVehicles(req: Request, res: Response) {
         const vehicles = await Vehicle.find();
         res.json({ vehicles });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi lấy danh sách phương tiện.' });
+        res.status(500).json({ message: 'Lỗi server khi lấy danh sách phương tiện.', error: err });
     }
 }
 
@@ -23,7 +23,7 @@ export async function getVehicleById(req: Request, res: Response) {
         }
         res.json({ vehicle });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi lấy phương tiện.' });
+        res.status(500).json({ message: 'Lỗi server khi lấy phương tiện.', error: err });
     }
 }
 
@@ -38,7 +38,7 @@ export async function getVehicleBySlug(req: Request, res: Response) {
         }
         res.json({ vehicle });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi lấy phương tiện.' });
+        res.status(500).json({ message: 'Lỗi server khi lấy phương tiện.', error: err });
     }
 }
 
@@ -50,7 +50,7 @@ export async function createVehicle(req: Request, res: Response) {
         const vehicle = await Vehicle.create({ name, slug, ...rest });
         res.status(201).json({ vehicle });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi tạo phương tiện.', error: err });
+        res.status(500).json({ message: 'Lỗi server khi tạo phương tiện.', error: err, });
     }
 }
 
@@ -58,7 +58,7 @@ export async function createVehicle(req: Request, res: Response) {
 export async function updateVehicle(req: Request, res: Response) {
     try {
         const { id } = req.params;
-        let updateData = { ...req.body };
+        const updateData = { ...req.body };
         if (updateData.name) {
             updateData.slug = slugify(updateData.name, { lower: true, locale: 'vi' });
         }
@@ -69,7 +69,7 @@ export async function updateVehicle(req: Request, res: Response) {
         }
         res.json({ vehicle });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi cập nhật phương tiện.' });
+        res.status(500).json({ message: 'Lỗi server khi cập nhật phương tiện.', error: err });
     }
 }
 
@@ -84,6 +84,6 @@ export async function deleteVehicle(req: Request, res: Response) {
         }
         res.json({ message: 'Xóa phương tiện thành công.' });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi xóa phương tiện.' });
+        res.status(500).json({ message: 'Lỗi server khi xóa phương tiện.', error: err });
     }
 } 

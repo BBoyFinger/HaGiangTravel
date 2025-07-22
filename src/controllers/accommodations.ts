@@ -8,7 +8,7 @@ export async function getAllAccommodations(req: Request, res: Response) {
         const accommodations = await Accommodation.find();
         res.json({ accommodations });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi lấy danh sách chỗ ở.' });
+        res.status(500).json({ error: err + 'Lỗi server khi lấy danh sách chỗ ở.' });
     }
 }
 
@@ -23,7 +23,7 @@ export async function getAccommodationById(req: Request, res: Response) {
         }
         res.json({ accommodation });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi lấy chỗ ở.' });
+        res.status(500).json({ error: err + 'Lỗi server khi lấy chỗ ở.' });
     }
 }
 
@@ -38,7 +38,7 @@ export async function getAccommodationBySlug(req: Request, res: Response) {
         }
         res.json({ accommodation });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi lấy chỗ ở.' });
+        res.status(500).json({ error: err + 'Lỗi server khi lấy chỗ ở.' });
     }
 }
 
@@ -50,7 +50,7 @@ export async function createAccommodation(req: Request, res: Response) {
         const accommodation = await Accommodation.create({ name, slug, ...rest });
         res.status(201).json({ accommodation });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi tạo chỗ ở.', error: err });
+        res.status(500).json({ error: err + 'Lỗi server khi tạo chỗ ở.' });
     }
 }
 
@@ -58,7 +58,7 @@ export async function createAccommodation(req: Request, res: Response) {
 export async function updateAccommodation(req: Request, res: Response) {
     try {
         const { id } = req.params;
-        let updateData = { ...req.body };
+        const updateData = { ...req.body };
         if (updateData.name) {
             updateData.slug = slugify(updateData.name, { lower: true, locale: 'vi' });
         }
@@ -69,7 +69,7 @@ export async function updateAccommodation(req: Request, res: Response) {
         }
         res.json({ accommodation });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi cập nhật chỗ ở.' });
+        res.status(500).json({ error: err + 'Lỗi server khi cập nhật chỗ ở.' });
     }
 }
 
@@ -84,6 +84,6 @@ export async function deleteAccommodation(req: Request, res: Response) {
         }
         res.json({ message: 'Xóa chỗ ở thành công.' });
     } catch (err) {
-        res.status(500).json({ message: 'Lỗi server khi xóa chỗ ở.' });
+        res.status(500).json({ error: err + 'Lỗi server khi xóa chỗ ở.' });
     }
 } 
