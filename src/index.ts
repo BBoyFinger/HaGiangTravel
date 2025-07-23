@@ -38,7 +38,10 @@ const PORT = process.env.PORT
 //Middleware
 app.use(cors({
   credentials: true,
-  origin: process.env.CLIENT_URL || "http://localhost:5173",
+  origin: [
+    'https://ha-giang-client.vercel.app',
+    'http://localhost:5173'
+  ]
 }));
 app.use(express.json())
 app.use(cookieParser())
