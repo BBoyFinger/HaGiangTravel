@@ -36,12 +36,22 @@ const PORT = process.env.PORT
 
 
 //Middleware
+const allowedOrigins = [
+  'https://ha-giang-client.vercel.app',
+  'https://ha-giang-client-wys6.vercel.app',
+  'http://localhost:5173'
+];
+
 app.use(cors({
-  credentials: true,
-  origin: [
-    'https://ha-giang-client.vercel.app',
-    'http://localhost:5173'
-  ]
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
 }));
 app.use(express.json())
 app.use(cookieParser())
