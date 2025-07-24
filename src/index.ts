@@ -37,8 +37,8 @@ const PORT = process.env.PORT
 
 //Middleware
 const allowedOrigins = [
-  'https://ha-giang-client.vercel.app',
-  " http://localhost:5173"
+  // 'https://ha-giang-client.vercel.app',
+  "http://localhost:5173"
 ];
 
 
