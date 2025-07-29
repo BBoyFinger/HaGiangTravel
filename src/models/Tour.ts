@@ -30,7 +30,7 @@ const tourSchema = new mongoose.Schema({
     vi: { type: String, required: true },
     en: { type: String, required: true },
   },
-  locations: [{
+  destination: [{
     vi: { type: String, required: true },
     en: { type: String, required: true },
   }],
