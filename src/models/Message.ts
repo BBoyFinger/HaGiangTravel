@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const messageSchema = new mongoose.Schema({
-  from: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  from: { type: String, required: true }, // Có thể là ObjectId hoặc string cho anonymous
   to: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   content: { type: String, required: true },
   read: { type: Boolean, default: false },
@@ -10,6 +10,9 @@ const messageSchema = new mongoose.Schema({
     enum: ['text', 'image', 'file', 'system'], 
     default: 'text' 
   },
+  // Thông tin cho user ẩn danh
+  senderName: { type: String },
+  senderEmail: { type: String },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });

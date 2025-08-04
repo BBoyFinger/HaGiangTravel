@@ -154,13 +154,48 @@ export async function removeFromWishlist(req: Request, res: Response) {
 // Lấy admin đầu tiên
 export async function getAdmin(req: Request, res: Response) {
   try {
-    const admin = await User.findOne({ role: 'admin' }).select('-passwordHash');
+    console.log("🔍 Searching for admin user...");
+    
+    // Tìm admin đầu tiên có sẵn
+    let admin = await User.findOne({ 
+      role: 'admin',
+      isActive: true
+    }).select('-passwordHash');
+    
+    console.log("📋 Admin search result:", admin ? `Found: ${admin.name} (${admin.email})` : "Not found");
+    
     if (!admin) {
-      res.status(404).json({ message: 'No admin found' });
-      return
+      console.log("🔄 No admin found, creating default admin...");
+      
+      // Nếu không có admin nào, tạo admin mặc định
+      const passwordHash = await bcrypt.hash("admin123", 10);
+      
+      const newAdmin = new User({
+        name: "Admin HaGiang Travel",
+        email: "admin@hagiangtravel.com",
+        passwordHash: passwordHash,
+        role: "admin",
+        isActive: true,
+        avatarUrl: "https://via.placeholder.com/150/059669/FFFFFF?text=Admin"
+      });
+      
+      await newAdmin.save();
+      console.log("✅ Created default admin user: admin@hagiangtravel.com");
+      console.log("🆔 Admin ID:", newAdmin._id);
+      
+      // Trả về admin mới tạo (không bao gồm password)
+      const adminWithoutPassword = newAdmin.toObject();
+      const { passwordHash: pwdHash, ...adminData } = adminWithoutPassword;
+      
+      console.log("📤 Sending admin data:", adminData);
+      res.json({ admin: adminData });
+      return;
     }
+    
+    console.log("📤 Sending existing admin data:", admin);
     res.json({ admin });
   } catch (err) {
+    console.error("❌ Error in getAdmin:", err);
     res.status(500).json({ message: 'Lỗi server khi lấy admin.', error: err });
   }
 }

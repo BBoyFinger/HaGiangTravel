@@ -24,22 +24,27 @@ import { messageRouter } from "./routes/users";
 
 dotenv.config();
 
+
 const app = express()
+//Middleware
+const allowedOrigins = [
+  'https://ha-giang-client.vercel.app',
+  'https://hagiang-travel.vercel.app',
+  'https://hagiang-travel.netlify.app',
+  "http://localhost:5173",
+  "http://localhost:3000"
+];
 const server = http.createServer(app);
 const io = new SocketIOServer(server, {
   cors: {
-    origin: ["http://localhost:5173", "https://ha-giang-client.vercel.app"],
+    origin: allowedOrigins,
     credentials: true
   }
 });
 const PORT = process.env.PORT
 
 
-//Middleware
-const allowedOrigins = [
-  // 'https://ha-giang-client.vercel.app',
-  "http://localhost:5173"
-];
+
 
 
 const corsOptions = {
@@ -94,32 +99,42 @@ io.on("connection", (socket) => {
     console.log(`👤 User ${userId} joined room`);
   });
 
+  // Lưu thông tin user ẩn danh
+  socket.on("set_anonymous_info", (info: { name: string, email: string }) => {
+    (socket as any).senderName = info.name;
+    (socket as any).senderEmail = info.email;
+    console.log(`👤 Anonymous user info set: ${info.name} (${info.email})`);
+  });
+
   // Gửi tin nhắn
   socket.on("send_message", async ({ from, to, content, createdAt }) => {
     try {
-      console.log("📨 Received message:", { from, to, content });
-      
-      // Lưu vào DB
-      const message = await Message.create({ 
-        from, 
-        to, 
-        content,
-        createdAt: createdAt || new Date()
+      console.log("📨 Received message:", { from, to, content, createdAt });
+      console.log("👤 Socket sender info:", {
+        senderName: (socket as any).senderName,
+        senderEmail: (socket as any).senderEmail
       });
 
-      // Populate user info
+      // Lưu vào DB
+      const message = await Message.create({
+        from,
+        to,
+        content,
+        createdAt: createdAt || new Date(),
+        senderName: (socket as any).senderName,
+        senderEmail: (socket as any).senderEmail
+      });
+
+      // Populate user info (chỉ cho 'to' vì 'from' có thể là anonymous)
       const populatedMessage = await Message.findById(message._id)
-        .populate('from', 'name email avatarUrl')
         .populate('to', 'name email avatarUrl');
 
-      // Gửi realtime cho người nhận
-      socket.to(to).emit("receive_message", populatedMessage);
-      
-      // Gửi realtime cho người gửi (để confirm)
-      socket.to(from).emit("receive_message", populatedMessage);
-      
+      // Gửi realtime cho tất cả clients (bao gồm cả người gửi)
+      io.emit("receive_message", populatedMessage);
+
       console.log("✅ Message sent successfully");
-      
+      console.log("📤 Emitted message to all clients:", populatedMessage);
+
       // Gửi email notification (optional)
       try {
         const recipient = await User.findById(to);
@@ -145,7 +160,7 @@ io.on("connection", (socket) => {
       } catch (emailErr) {
         console.log("📧 Email notification failed:", emailErr);
       }
-      
+
     } catch (error) {
       console.error("❌ Error sending message:", error);
       socket.emit("message_error", { error: "Failed to send message" });

@@ -7,7 +7,10 @@ import transporter from '../config/nodemailer';
 export async function getChatHistory(req: Request, res: Response) {
     try {
         const userId = req.params.userId;
-        const admin = await User.findOne({ role: 'admin' });
+        const admin = await User.findOne({ 
+            role: 'admin',
+            isActive: true
+        });
         if (!admin) {
             res.status(404).json({ message: 'No admin found' });
             return;
@@ -40,11 +43,16 @@ export async function sendMessage(req: Request, res: Response) {
             return;
         }
         
-        const message = await Message.create({ from, to, content });
+        const message = await Message.create({ 
+          from, 
+          to, 
+          content,
+          senderName: req.body.senderName,
+          senderEmail: req.body.senderEmail
+        });
         
-        // Populate user info
+        // Populate user info (chỉ cho 'to' vì 'from' có thể là anonymous)
         const populatedMessage = await Message.findById(message._id)
-            .populate('from', 'name email avatarUrl')
             .populate('to', 'name email avatarUrl');
         
         // Gửi email thông báo nếu cần
@@ -83,7 +91,10 @@ export async function sendMessage(req: Request, res: Response) {
 export async function getChatUsers(req: Request, res: Response) {
     try {
         // Lấy admin
-        const admin = await User.findOne({ role: 'admin' });
+        const admin = await User.findOne({ 
+            role: 'admin',
+            isActive: true
+        });
         if (!admin) {
             res.status(404).json({ message: 'No admin found' });
             return
